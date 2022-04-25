@@ -12,10 +12,29 @@
     if I am found in violation of this policy.'''
 
 
+# import stuff
+import csv
+import hashlib
+
+
+# creat Block object
+# this stores the transaction and gets the prof
+class  Block_Obj:
+    pass
+
+# creat Blockchain object
+# this adds the block to the blockchain and saves to a CSV
+class Blockchain:
+    pass
+
+
 # Name: main () function
 # Job: main program function
 # Peramiters: none
 def main ():
+    # initiate the chain
+    # get user input
+    # save to chain
     pass
 
 # Run main () program function
