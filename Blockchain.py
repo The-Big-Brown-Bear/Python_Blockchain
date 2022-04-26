@@ -4,7 +4,7 @@
 # Class: (INFO 1200)
 # Section: (X01)
 # Professor: (Crandall)
-# Date: 25/04/12022
+# Date: 26/04/12022
 # Project #: Final
 ''' I declare that the source code contained in this assignment was written solely by me.
     I understand that copying any source code, in whole or in part, 
@@ -15,7 +15,7 @@
 # import stuff
 import json
 import csv
-import hashlib
+import hashlib ### <- <- want to understand
 import sys
 
 PATHNAME = "Blockchain\blockchain.csv"
@@ -33,7 +33,10 @@ class Blockchain:
     # Function: mine_block()
     # Job: this mines the new block and saves it to the CSV chain
     # Peramiters: 
-    def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num):
+    def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num = None):
+        if previus_proof_num == None:
+            previus_proof_num = self.chain[-1["proof"]]
+
         proof = self.proof_of_work(previus_proof_num)
         block = {"sender":sender,
                 "recever":recever,
@@ -139,6 +142,7 @@ def main ():
 
     
     print (menu)
+
     while True: # main program loop
         command = input('Comand: ->  ')
         # switch case statments for menu command
@@ -148,8 +152,10 @@ def main ():
             print ("Good by!")
             sys.exit()
         elif command == "new":
-            ### need some print statmens to get user input            
-            Chain.mine_block()
+            sender = input ("senders name: ")
+            recever = input ("Recever name: ")
+            transaction = get_valed_float("Transaction amount: $", max = 1000*1000)     
+            Chain.mine_block(sender, recever, transaction)
         elif command == "list":
             Chain.list_chain()
         elif command == "vew":
@@ -163,12 +169,35 @@ def main ():
 
 # creat function that
 # verifies user info as a float
-def get_valed_float ():
-    pass
+def get_valed_float (message:str = "input float: ", min = 0, max = 1000):
+    while True:
+        try:
+            value = float(input(message))
+        except ValueError as a:
+            print(type(a), a)
+            print("Please use numerals (1, 2.3, 53, etc...")
+            continue
+        if value >= min and value <= max:
+            return value
+        else:
+            print (f"Must be bigger than {min} and less than {max}")
+            continue
 
 
-def get_valled_int():
-    pass
+def get_valled_int(message:str = "input float: ", min = 0, max = 1000):
+    while True:
+        try:
+            value = int(input(message))
+        except ValueError as a:
+            print(type(a), a)
+            print("Please use numerals (1, 20, 453, etc...")
+            continue
+        if value >= min and value <= max:
+            return value
+        else:
+            print (f"Must be bigger than {min} and less than {max}")
+            continue
+
 
 # Run main () program function
 if __name__ == "__main__" : main ()
