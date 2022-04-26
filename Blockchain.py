@@ -14,9 +14,10 @@
 
 # import stuff
 import json
+import csv
 import hashlib
 
-PATHNAME = "blockchain.json"
+PATHNAME = "blockchain.csv"
 
 # creat Block object
 # this stores the transaction and gets the prof
@@ -32,36 +33,65 @@ class  Block_Obj:
 # creat Blockchain object
 # this adds the block to the blockchain and saves to a CSV
 class Blockchain:
-    def __init__():
+    chain:list
+    def __init__(self):
+        self.chain = []
         # creat the genisus block
-        pass
-
-    def mine_block(self, sender, recever, transaction):
-        proof = ''
-        block = {   "index": i,
-                    "previus": blocks,
-                    "proof": proof,
-                    "sender": sender,
-                    "recipient": recever,
-                    "amount": transaction
-                }
+        self.mine_block("genisus","genisus", 0.0)
 
 
-    def get_chain(self):
-        with open(PATHNAME, 'r', newline='') as json_file:
-            temp = json_file.readlines()
-            chain = json.loads(temp)
-            return chain
+    # Function: mine_block()
+    # Job: this mines the new block and saves it to the CSV chain
+    # Peramiters: 
+    def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num):
+        proof = self.proof_of_work(previus_proof_num)
+        block = [sender,recever,transaction,proof]
+        hash = self.hash()
+        block.append(hash)
+                
+        with open(PATHNAME, 'a', newline='') as csv_file:
+            block_writer = csv.writer(csv_file)
+            block_writer.writerow(block)
+            csv_file.close()      
 
+        self.chain.append(block)     
+        return block
 
-    def save_chain(self, new_block):
-        with open (PATHNAME, 'w', newline="" ) as json_file:
-            pass
+    
+    # This is the function for proof of work
+    # and used to successfully mine the block
+    # this is from 'https://www.geeksforgeeks.org/create-simple-blockchain-using-python/'
+    def proof_of_work(self, previous_proof):
+        new_proof = 1
+        check_proof = False
+         
+        while check_proof is False:
+            hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
             
+            if hash_operation[:5] == '00000':
+                check_proof = True
+            else:
+                new_proof += 1
+                 
+        return new_proof
 
+
+    # this is from 'https://www.geeksforgeeks.org/create-simple-blockchain-using-python/'
+    # calculates the hash of a string of text
+    def hash(self, block):
+        
+        encoded_block = json.dumps(block, sort_keys=True).encode()
+        
+        return hashlib.sha256(encoded_block).hexdigest()
+
+
+              
+    # lists the blocks in the chain line by line
     def list_chain(self, chain):
         pass
+    
 
+    # finds and prints a single block on the chain
     def show_block(self, index_num, chain):
         pass
 
