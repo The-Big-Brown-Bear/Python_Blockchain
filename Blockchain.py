@@ -16,19 +16,9 @@
 import json
 import csv
 import hashlib
+import sys
 
-PATHNAME = "blockchain.csv"
-
-# creat Block object
-# this stores the transaction and gets the prof
-class  Block_Obj:
-    block:list
-    sender:str
-    recever:str
-    transaction:float
-
-    def __init__(self, sender, recever, transaction):
-        pass
+PATHNAME = "Blockchain\blockchain.csv"
 
 # creat Blockchain object
 # this adds the block to the blockchain and saves to a CSV
@@ -45,9 +35,13 @@ class Blockchain:
     # Peramiters: 
     def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num):
         proof = self.proof_of_work(previus_proof_num)
-        block = [sender,recever,transaction,proof]
+        block = {"sender":sender,
+                "recever":recever,
+                "transaction":transaction,
+                "proof":proof,
+                "hash":0}
         hash = self.hash()
-        block.append(hash)
+        block["hash"] = hash
                 
         with open(PATHNAME, 'a', newline='') as csv_file:
             block_writer = csv.writer(csv_file)
@@ -84,16 +78,42 @@ class Blockchain:
         
         return hashlib.sha256(encoded_block).hexdigest()
 
+    
+    # Validates the chain
+    # NEED TO CHANGE TO WORK WITH PROGRAM
+    def chain_valid(self, chain):
+        previous_block = chain[0]
+        block_index = 1
+         
+        while block_index < len(chain):
+            block = chain[block_index]
+            if block['previous_hash'] != self.hash(previous_block):
+                return False
+               
+            previous_proof = previous_block['proof']
+            proof = block['proof']
+            hash_operation = hashlib.sha256(
+                str(proof**2 - previous_proof**2).encode()).hexdigest()
+             
+            if hash_operation[:5] != '00000':
+                return False
+            previous_block = block
+            block_index += 1
+         
+        return True
+
 
               
-    # lists the blocks in the chain line by line
-    def list_chain(self, chain):
-        pass
+    # Job: lists the blocks in the chain line by line
+    def list_chain(self,):
+        for i in self.chain:
+            print(f"{i['sender']}\t{i['recever']}\t{i['transaction']}\t{i['proof']}\t{i['hash']}")
     
 
-    # finds and prints a single block on the chain
-    def show_block(self, index_num, chain):
-        pass
+    # Job: finds and prints a single block on the chain
+    def show_block(self, index_num):
+        i = self.chain[index_num]
+        print(f"{i['sender']}\t{i['recever']}\t{i['transaction']}\t{i['proof']}\t{i['hash']}")
 
 
 # Name: main () function
@@ -103,11 +123,52 @@ def main ():
     # initiate the chain
     # get user input
     # save to chain
-    pass
+    
+    print ("Benjamin Boden's Blockchian program")
+    print ()
+
+    Chain = Blockchain()
+
+    menu = '''Comands:
+            
+            new --------- creats new block
+            list -------- lists all blocks in the chain
+            vew --------- shows one block
+            menu -------- shows the menu
+            exit -------- ends the program''' # list of comands saved as string
+
+    
+    print (menu)
+    while True: # main program loop
+        command = input('Comand: ->  ')
+        # switch case statments for menu command
+        if command == "menu":
+            print(menu)
+        elif command == "exit":
+            print ("Good by!")
+            sys.exit()
+        elif command == "new":
+            ### need some print statmens to get user input            
+            Chain.mine_block()
+        elif command == "list":
+            Chain.list_chain()
+        elif command == "vew":
+            num = get_valled_int("What block num do you want: ")
+            Chain.show_block(num)
+        else :
+            print ("Not a valled responce")
+            print ("hint: use command 'menu' to vew the list of commands again")
+
 
 
 # creat function that
 # verifies user info as a float
+def get_valed_float ():
+    pass
+
+
+def get_valled_int():
+    pass
 
 # Run main () program function
 if __name__ == "__main__" : main ()
