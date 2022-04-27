@@ -27,32 +27,47 @@ class Blockchain:
     def __init__(self):
         self.chain = []
         # creat the genisus block
-        self.mine_block("genisus","genisus", 0.0)
+        self.mine_block("genisus","genisus", transaction=0.0, previus_proof_num=100)
 
 
     # Function: mine_block()
     # Job: this mines the new block and saves it to the CSV chain
     # Peramiters: 
-    def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num = None):
-        if previus_proof_num == None:
-            previus_proof_num = self.chain[-1["proof"]]
+    def mine_block(self, sender:str, recever:str, transaction:float, previus_proof_num:int = 0):
+        if previus_proof_num == 0:
+            previus_proof_list = self.chain[-1]
+            previus_proof_num = previus_proof_list['proof']
 
         proof = self.proof_of_work(previus_proof_num)
-        block = {"sender":sender,
+        new_block = {"sender":sender,
                 "recever":recever,
                 "transaction":transaction,
                 "proof":proof,
                 "hash":0}
-        hash = self.hash()
-        block["hash"] = hash
-                
-        with open(PATHNAME, 'a', newline='') as csv_file:
-            block_writer = csv.writer(csv_file)
-            block_writer.writerow(block)
-            csv_file.close()      
+        hash = self.hash(new_block)
+        new_block["hash"] = hash
 
-        self.chain.append(block)     
-        return block
+        try:       
+            with open(PATHNAME, 'a', newline='') as csv_file:
+                block_writer = csv.writer(csv_file)
+                block_writer.writerow(new_block)
+                csv_file.close()
+        except OSError as e:
+            print (type(e), e)
+            print (f"no file {PATHNAME} found.")
+            choice = input("Would you like to creat this file? (y/n): ")
+            if choice.lower() == 'y' or choice.lower() == "yes":
+                ### make it creat the file
+                with open(PATHNAME, 'w', newline='') as new_csv:
+                    block_writer = csv.writer(new_csv)
+                    block_writer.writerow(new_block)
+                    csv_file.close()                    
+            else:
+                print ("Ok, Ending program")
+                sys.exit()
+
+        self.chain.append(new_block)     
+        return new_block
 
     
     # This is the function for proof of work
