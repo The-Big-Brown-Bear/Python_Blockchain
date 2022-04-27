@@ -18,7 +18,7 @@ import csv
 import hashlib ### <- <- want to understand
 import sys
 
-PATHNAME = "Blockchain\blockchain.csv"
+PATHNAME = "blockchian.csv"
 
 # creat Blockchain object
 # this adds the block to the blockchain and saves to a CSV
